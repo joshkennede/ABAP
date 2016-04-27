@@ -1,0 +1,28 @@
+REPORT Z_MOD_2.
+
+DATA RESULT LIKE SPELL.
+
+SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN  COMMENT 1(15)  TEXT-001.
+PARAMETER MYNUM   TYPE I.
+SELECTION-SCREEN END OF LINE.
+
+
+CALL FUNCTION 'SPELL_AMOUNT'
+ EXPORTING
+   AMOUNT           = MYNUM
+*   CURRENCY        = 'USD'
+*   FILLER          = ' '
+*   LANGUAGE        = SY-LANGU
+ IMPORTING
+   IN_WORDS        = RESULT
+* EXCEPTIONS
+*   NOT_FOUND       = 1
+*   TOO_LARGE       = 2
+*   OTHERS          = 3
+          .
+IF SY-SUBRC <> 0.
+  WRITE: 'The function module returned a value of: ', SY-SUBRC.
+ELSE.
+  WRITE: 'The amount in words is: ', RESULT-WORD.
+ENDIF.
