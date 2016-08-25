@@ -9,6 +9,7 @@
 
 REPORT z_codeideas.
 
+TABLES: zhr_mini_rtwpbp.
 
 *Global Variables
 
@@ -21,6 +22,9 @@ DATA: gv_randnum    TYPE p LENGTH 2 DECIMALS 2.
 
 SELECTION-SCREEN BEGIN OF BLOCK ideas WITH FRAME TITLE text-007.
 
+SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN PUSHBUTTON (8) text-012 USER-COMMAND press.
+SELECTION-SCREEN END OF LINE.
 SELECTION-SCREEN BEGIN OF LINE.
 SELECTION-SCREEN COMMENT  01(18) text-001.
 PARAMETERS: fzbz RADIOBUTTON GROUP rgrp.
@@ -64,41 +68,60 @@ PARAMETERS: pa_int1(5)  TYPE n DEFAULT 1,
             pa_op       TYPE c LENGTH 1 DEFAULT '+',
             pa_int2(5)  TYPE n DEFAULT 1.
 SELECTION-SCREEN END OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN COMMENT  01(18) text-010.
+PARAMETERS: split RADIOBUTTON GROUP rgrp.
+SELECTION-SCREEN POSITION POS_LOW.
+*PARAMETERS: tstrg(25) TYPE c DEFAULT '2016,08,01,1630,20081754'.
+*PARAMETER: pa_word(15)  TYPE c.
+SELECTION-SCREEN END OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN COMMENT  01(18) text-011.
+PARAMETER: p_txnu RADIOBUTTON GROUP rgrp.
+SELECTION-SCREEN POSITION POS_LOW.
+PARAMETER: p_text(25) TYPE c DEFAULT sy-sysid.
+PARAMETER: p_len(2)   TYPE n DEFAULT '1'.
+SELECTION-SCREEN END OF LINE.
 
 SELECTION-SCREEN END OF BLOCK ideas.
 
 *&---------------------------------------------------------------------*
 *&---------------------------------------------------------------------*
 
+AT SELECTION-SCREEN ON p_len.
+*  IF p_len > 25.
+*    MESSAGE 'P_LEN should be less or equal 25' TYPE 'E'.
+*  ENDIF.
+  IF sy-ucomm = 'PRESS'.
+    MESSAGE 'These are code ideas' TYPE 'I'.
+  ENDIF.
+
 START-OF-SELECTION.
 
   IF fzbz = 'X'.
     PERFORM fizzbuzz.
     WRITE:/ gv_fizzbuzz.
-  ENDIF.
-  IF rndn = 'X'.
+  ELSEIF rndn = 'X'.
     PERFORM gen_rnd_num.
     WRITE:/ gv_randnum.
-  ENDIF.
-  IF helop = 'X'.
+    CLEAR: gv_randnum.
+  ELSEIF helop = 'X'.
     PERFORM hello_loop.
-  ENDIF.
-  IF delay = 'X'.
+  ELSEIF delay = 'X'.
     PERFORM delay_it.
-  ENDIF.
-  IF prog = 'X'.
+  ELSEIF prog = 'X'.
     PERFORM prog_message.
-  ENDIF.
-  IF syid = 'X'.
+  ELSEIF syid = 'X'.
     PERFORM syid_status.
-  ENDIF.
-  IF cpern = 'X'.
+  ELSEIF cpern = 'X'.
     PERFORM count_unique_pernr.
-  ENDIF.
-  IF calcu = 'X'.
+  ELSEIF calcu = 'X'.
     PERFORM calculator.
+  ELSEIF split = 'X'.
+    PERFORM split_word.
+  ELSEIF p_txnu = 'X'.
+    PERFORM text_num_count.
   ENDIF.
-
 
 END-OF-SELECTION.
 
@@ -174,13 +197,43 @@ ENDFORM.          " GEN_RND_NUM
 *&---------------------------------------------------------------------*
 *&      Form  hello_loop                                               *
 *&---------------------------------------------------------------------*
-*       Simple DO loop for iterating through a single idea.            *
+*&      Simple DO loop for iterating through a single idea.            *
+*&      Captures system time after processing and determines if the    *
+*&      Time is even or odd and prints it to the console.              *
 *----------------------------------------------------------------------*
 FORM hello_loop.
 
-  DO 25 TIMES.
-    WRITE:/ 'Hello!'.
-  ENDDO.
+  DATA: lv_time_start   LIKE sy-uzeit,
+        lv_time_end     LIKE sy-uzeit,
+        lv_time_diff    LIKE sy-uzeit.
+  DATA: lv_remainder    TYPE p DECIMALS 2.
+  DATA: lv_time_value   TYPE i VALUE 13.
+
+  GET TIME.
+  lv_time_start = sy-uzeit.
+
+*  DO 150 TIMES.
+*    WRITE: 'Hello', '...', 'World', '...', 'it is:', '...', sy-uzeit.
+*  ENDDO.
+
+  PERFORM prog_message.   "This is to cause delay (even though it is always the same time) between GET TIME statements.
+
+  GET TIME.
+  lv_time_end = sy-uzeit.
+
+  IF lv_time_end > lv_time_start.
+    lv_time_diff = lv_time_end - lv_time_start.
+  ENDIF.
+
+  lv_time_value =  lv_time_diff.
+  lv_remainder = ( lv_time_value MOD 2 ).
+
+  CASE lv_remainder.
+    WHEN 0.
+      WRITE:/ 'Even - ', sy-uzeit.
+    WHEN OTHERS.
+      WRITE:/ 'Odd - ', sy-uzeit.
+  ENDCASE.
 
 ENDFORM.                    "hello_loop
 
@@ -212,17 +265,17 @@ ENDFORM.                    "delay_it
 *&---------------------------------------------------------------------*
 *&      Form  prog_message
 *&---------------------------------------------------------------------*
-*&      Progress message indicator
+*&      Progress message indicator using percentage
 *&---------------------------------------------------------------------*
 FORM prog_message.
 
   DATA: a     LIKE sy-ucomm,
         b(10) TYPE c VALUE 'Testing...'.
 
-  DO 999 TIMES.
-    DO 999 TIMES.
+  DO 400 TIMES.
+    DO 400 TIMES.
       GET TIME.
-      WRITE:/ b.
+      "WRITE:/ b.
     ENDDO.
     a(3) = sy-index.a+3 = '%'.
 
@@ -237,7 +290,7 @@ ENDFORM.                    "prog_message
 *&---------------------------------------------------------------------*
 *&      Form  syid_status
 *&---------------------------------------------------------------------*
-*       text
+*       Print System Fields
 *----------------------------------------------------------------------*
 FORM syid_status.
 
@@ -255,34 +308,34 @@ ENDFORM.                    "syid_status
 *&---------------------------------------------------------------------*
 *&      Form  count_unique_pernr
 *&---------------------------------------------------------------------*
-*       text
-*----------------------------------------------------------------------*
+*&      From another pgm - Count unique pernrs in ZHR_MINI_RTWPBP
+*&----------------------------------------------------------------------*
 FORM count_unique_pernr.
-
-  TABLES: zhr_mini_rtwpbp.
 
   TYPES: BEGIN OF type_in,
          pernr LIKE zhr_mini_rtwpbp-pernr,
          END OF type_in.
 
-  DATA: itab_table  TYPE STANDARD TABLE OF type_in.
-  DATA: wa_table    TYPE type_in.
+  DATA:  itab_table  TYPE STANDARD TABLE OF type_in.
+  DATA:  wa_table    TYPE type_in.
 
   TYPES: BEGIN OF type_out,
          pernr LIKE zhr_mini_rtwpbp-pernr,
          count TYPE i,
          END OF type_out.
 
-  DATA: it_main         TYPE TABLE OF type_out,
-        wa_main         TYPE type_out.
+  DATA:  it_main         TYPE TABLE OF type_out,
+         wa_main         TYPE type_out.
 
-  DATA: curr_pernr      LIKE zhr_mini_rtwpbp-pernr,
-        prev_pernr      LIKE zhr_mini_rtwpbp-pernr.
-  DATA: rec_tot         TYPE i VALUE 1.
+  DATA:  curr_pernr      LIKE zhr_mini_rtwpbp-pernr,
+         prev_pernr      LIKE zhr_mini_rtwpbp-pernr.
+  DATA:  rec_tot         TYPE i VALUE 1.
 
   SELECT pernr
-      FROM zhr_mini_rtwpbp UP TO 10000 ROWS
+      FROM zhr_mini_rtwpbp
+      UP TO 10000 ROWS
       INTO TABLE itab_table
+      "WHERE pernr = '20081754'
       "WHERE begda <= sy-datum
       "AND   endda >= sy-datum
       ORDER BY pernr.
@@ -328,7 +381,6 @@ FORM count_unique_pernr.
             wa_main-count.
     CLEAR: wa_main.
   ENDLOOP.
-
   ULINE.
 
   WRITE:/ 'Date:', 17 sy-datum.
@@ -341,11 +393,11 @@ ENDFORM.                    "count_unique_pernr
 *&---------------------------------------------------------------------*
 *&      Form  calculator
 *&---------------------------------------------------------------------*
-*       text
-*----------------------------------------------------------------------*
+*&      Basic Calculator for Add, Subtract, Multiply, Divide
+*&----------------------------------------------------------------------*
 FORM calculator.
 
-  DATA: lv_result   TYPE p LENGTH 16 DECIMALS 2.
+  DATA: lv_result   TYPE p DECIMALS 2.
 
   CASE pa_op.
     WHEN '+'.
@@ -361,3 +413,68 @@ FORM calculator.
   WRITE: 'Result:', lv_result.
 
 ENDFORM.                    "calculator
+
+*&---------------------------------------------------------------------*
+*&      Form  split_word
+*&---------------------------------------------------------------------*
+*       Split a string into separate characters by a common delimiter
+*----------------------------------------------------------------------*
+FORM split_word.
+
+  DATA: lv_mountains TYPE string VALUE 'M,O,U,N,T,A,I,N,S'.
+  DATA: lv_word_len  TYPE i.
+  DATA: lv_splitindc TYPE c VALUE ','.
+  DATA: lv_s1 TYPE c,
+        lv_s2 TYPE c,
+        lv_s3 TYPE c,
+        lv_s4 TYPE c,
+        lv_s5 TYPE c,
+        lv_s6 TYPE c,
+        lv_s7 TYPE c,
+        lv_s8 TYPE c,
+        lv_s9 TYPE c.
+
+*  lv_word_len = strlen( pa_word ).
+*  WRITE:/ lv_word_len.
+
+  WRITE:/ 'Before Parsing:', lv_mountains.
+
+  SPLIT lv_mountains
+  AT lv_splitindc
+  INTO lv_s1 lv_s2 lv_s3 lv_s4 lv_s5 lv_s6 lv_s7 lv_s8 lv_s9.
+
+  WRITE:/ 'After Parsing:',
+          lv_s1,
+          lv_s2,
+          lv_s3,
+          lv_s4,
+          lv_s5,
+          lv_s6,
+          lv_s7,
+          lv_s8,
+          lv_s9.
+
+ENDFORM.                    "split_word
+
+*&---------------------------------------------------------------------*
+*&      Form text_num_count
+*&---------------------------------------------------------------------*
+*       Printing a string as many times as it has been initialized by
+*       a number
+*----------------------------------------------------------------------*
+FORM text_num_count.
+
+  DATA: p_len_string LIKE p_text.
+
+  p_len_string = strlen( p_text ).
+
+  IF p_len_string = p_len.
+    DO p_len TIMES.
+      WRITE:/ 'Line', sy-index, p_text(sy-index).
+    ENDDO.
+  ELSE.
+    WRITE:/ 'String Length is out of scope.'.
+  ENDIF.
+
+
+ENDFORM.                    "text_num_count
