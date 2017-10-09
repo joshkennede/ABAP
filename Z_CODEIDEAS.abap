@@ -1,66 +1,77 @@
-*&---------------------------------------------------------------------*
+*&----------------------------------------------------------------------*
 *&  Report  Z_CODEIDEAS
 *&
-*&---------------------------------------------------------------------*
+*&----------------------------------------------------------------------*
 *&
 *&  Written by Josh Kennedy 07.26.16
 *&
-*&---------------------------------------------------------------------*
+*&----------------------------------------------------------------------*
 
 REPORT z_codeideas.
 
-TABLES: zhr_mini_rtwpbp.
+*&----------------------------------------------------------------------*
+*& Table Declaration
+*&----------------------------------------------------------------------*
+
+TABLES: zhr_mini_rtwpbp,
+        pa0002.
+
+*&----------------------------------------------------------------------*
+*& Data Declaration
+*&----------------------------------------------------------------------*
 
 *Global Variables
 
 DATA: gv_fizzbuzz   TYPE c LENGTH 4.
 DATA: gv_randnum    TYPE p LENGTH 2 DECIMALS 2.
 
-*&---------------------------------------------------------------------*
-*& Selection Screen
-*&---------------------------------------------------------------------*
+*Local Variables
+
+*&----------------------------------------------------------------------*
+*& Start-Of-Selection Screen Declaration
+*&----------------------------------------------------------------------*
 
 SELECTION-SCREEN BEGIN OF BLOCK ideas WITH FRAME TITLE text-007.
 
-SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "INFO
 SELECTION-SCREEN PUSHBUTTON (8) text-012 USER-COMMAND press.
 SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "Fizzbuzz
 SELECTION-SCREEN COMMENT  01(18) text-001.
 PARAMETERS: fzbz RADIOBUTTON GROUP rgrp.
 SELECTION-SCREEN POSITION POS_LOW.
 SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "Random Number
 SELECTION-SCREEN COMMENT  01(18) text-002.
 PARAMETERS: rndn RADIOBUTTON GROUP rgrp.
 SELECTION-SCREEN POSITION POS_LOW.
 SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "Hello Loop
 SELECTION-SCREEN COMMENT  01(18) text-003.
 PARAMETERS: helop RADIOBUTTON GROUP rgrp.
 SELECTION-SCREEN POSITION POS_LOW.
 SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "Delay n seconds
 SELECTION-SCREEN COMMENT  01(18) text-004.
 PARAMETERS: delay RADIOBUTTON GROUP rgrp.
 SELECTION-SCREEN POSITION POS_LOW.
 SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "Progress
 SELECTION-SCREEN COMMENT  01(18) text-005.
 PARAMETERS: prog RADIOBUTTON GROUP rgrp.
 SELECTION-SCREEN POSITION POS_LOW.
 SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "System Fields
 SELECTION-SCREEN COMMENT  01(18) text-006.
 PARAMETERS: syid RADIOBUTTON GROUP rgrp.
 SELECTION-SCREEN POSITION POS_LOW.
 SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "Count Pernr
 SELECTION-SCREEN COMMENT  01(18) text-008.
 PARAMETERS: cpern RADIOBUTTON GROUP rgrp.
 SELECTION-SCREEN POSITION POS_LOW.
 SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "Calculator
 SELECTION-SCREEN COMMENT  01(18) text-009.
 PARAMETERS: calcu RADIOBUTTON GROUP rgrp.
 SELECTION-SCREEN POSITION POS_LOW.
@@ -68,25 +79,74 @@ PARAMETERS: pa_int1(5)  TYPE n DEFAULT 1,
             pa_op       TYPE c LENGTH 1 DEFAULT '+',
             pa_int2(5)  TYPE n DEFAULT 1.
 SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "Split Word
 SELECTION-SCREEN COMMENT  01(18) text-010.
 PARAMETERS: split RADIOBUTTON GROUP rgrp.
 SELECTION-SCREEN POSITION POS_LOW.
-*PARAMETERS: tstrg(25) TYPE c DEFAULT '2016,08,01,1630,20081754'.
-*PARAMETER: pa_word(15)  TYPE c.
 SELECTION-SCREEN END OF LINE.
-SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "String Length
 SELECTION-SCREEN COMMENT  01(18) text-011.
 PARAMETER: p_txnu RADIOBUTTON GROUP rgrp.
 SELECTION-SCREEN POSITION POS_LOW.
 PARAMETER: p_text(25) TYPE c DEFAULT sy-sysid.
 PARAMETER: p_len(2)   TYPE n DEFAULT '1'.
 SELECTION-SCREEN END OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "Age Calculator
+SELECTION-SCREEN COMMENT  01(18) text-013.
+PARAMETER: p_dat RADIOBUTTON GROUP rgrp.
+SELECTION-SCREEN POSITION POS_LOW.
+PARAMETERS: p_dat1 TYPE datum,
+            p_dat2 TYPE datum DEFAULT sy-datum.
+SELECTION-SCREEN END OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "Birthday Calculator
+SELECTION-SCREEN COMMENT 01(18) text-014.
+PARAMETER: p_dat5 RADIOBUTTON GROUP rgrp.
+SELECTION-SCREEN POSITION POS_LOW.
+PARAMETERS: p_dat3 TYPE datum DEFAULT '19860910',
+            p_dat4 TYPE datum DEFAULT sy-datum.
+SELECTION-SCREEN END OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "Lightspeedish Calculator
+SELECTION-SCREEN COMMENT 01(18) text-019.
+PARAMETER: p_ligh RADIOBUTTON GROUP rgrp.
+SELECTION-SCREEN POSITION POS_LOW.
+PARAMETERS: p_lad1 TYPE datum DEFAULT '19860910',
+            p_lad2 TYPE datum DEFAULT sy-datum.
+SELECTION-SCREEN END OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.
+SELECTION-SCREEN COMMENT  01(28) text-015.
+SELECT-OPTIONS spernr FOR pa0002-pernr DEFAULT '20081754'.
+SELECTION-SCREEN END OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "Split Word
+SELECTION-SCREEN COMMENT  01(18) text-016.
+PARAMETERS: p_ip RADIOBUTTON GROUP rgrp.
+SELECTION-SCREEN POSITION POS_LOW.
+SELECTION-SCREEN END OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "Uppercase Test
+SELECTION-SCREEN COMMENT  01(18) text-017.
+PARAMETERS: p_letr RADIOBUTTON GROUP rgrp.
+SELECTION-SCREEN POSITION POS_LOW.
+PARAMETER:  p_strg TYPE c LENGTH 26 DEFAULT 'ABCDEFGHIJKLMnOPQRSTUVWXYZ'.
+SELECTION-SCREEN END OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "Uppercase Test
+SELECTION-SCREEN COMMENT  01(18) text-018.
+PARAMETERS: p_iput RADIOBUTTON GROUP rgrp.
+SELECTION-SCREEN POSITION POS_LOW.
+SELECTION-SCREEN END OF LINE.
+SELECTION-SCREEN BEGIN OF LINE.                                 "Unicode/Non Unicode Test
+SELECTION-SCREEN COMMENT  01(18) text-020.
+PARAMETER: p_ucod RADIOBUTTON GROUP rgrp.
+SELECTION-SCREEN POSITION POS_LOW.
+SELECTION-SCREEN END OF LINE.
 
 SELECTION-SCREEN END OF BLOCK ideas.
 
-*&---------------------------------------------------------------------*
-*&---------------------------------------------------------------------*
+*&----------------------------------------------------------------------*
+*& End-Of-Selection Screen Declaration
+*&----------------------------------------------------------------------*
+
+*&----------------------------------------------------------------------*
+*& Begin of At Selection-Screen Declaration
+*&----------------------------------------------------------------------*
 
 AT SELECTION-SCREEN ON p_len.
 *  IF p_len > 25.
@@ -96,6 +156,13 @@ AT SELECTION-SCREEN ON p_len.
     MESSAGE 'These are code ideas' TYPE 'I'.
   ENDIF.
 
+*&----------------------------------------------------------------------*
+*& End of At Selection-Screen Declaration
+*&----------------------------------------------------------------------*
+
+*&----------------------------------------------------------------------*
+*& Start-Of-Selection Event Declaration
+*&----------------------------------------------------------------------*
 START-OF-SELECTION.
 
   IF fzbz = 'X'.
@@ -103,8 +170,8 @@ START-OF-SELECTION.
     WRITE:/ gv_fizzbuzz.
   ELSEIF rndn = 'X'.
     PERFORM gen_rnd_num.
-    WRITE:/ gv_randnum.
-    CLEAR: gv_randnum.
+*    WRITE:/ gv_randnum.
+*    CLEAR: gv_randnum.
   ELSEIF helop = 'X'.
     PERFORM hello_loop.
   ELSEIF delay = 'X'.
@@ -121,9 +188,26 @@ START-OF-SELECTION.
     PERFORM split_word.
   ELSEIF p_txnu = 'X'.
     PERFORM text_num_count.
+  ELSEIF p_dat = 'X'.
+    PERFORM agecalculation.
+  ELSEIF p_ligh = 'X'.
+    PERFORM calculate_age_by_lightyears.
+  ELSEIF p_dat5 = 'X'.
+    PERFORM calculate_bday.
+  ELSEIF p_ip = 'X'.
+    PERFORM get_ip_address.
+  ELSEIF p_letr = 'X'.
+    PERFORM string_uppercase.
+  ELSEIF p_iput = 'X'.
+    PERFORM get_user_input.
+  ELSEIF p_ucod = 'X'.
+    PERFORM unicode_check.
   ENDIF.
 
 END-OF-SELECTION.
+*&----------------------------------------------------------------------*
+*& End-Of-Selection Event Declaration
+*&----------------------------------------------------------------------*
 
 *&----------------------------------------------------------------------*
 *&      Form  fizzbuzz                                                  *
@@ -165,7 +249,7 @@ FORM fizzbuzz.
 
   ENDDO.
 
-  MOVE lv_buzz TO gv_fizzbuzz. " lv_buzz is '100' at this point so I am moving it to a global var
+  "MOVE lv_buzz TO gv_fizzbuzz. " lv_buzz is '100' at this point so I am moving it to a global var
   " and printing it to the console.
 
 ENDFORM.                    "fizzbuzz
@@ -189,8 +273,9 @@ FORM gen_rnd_num.
     EXCEPTIONS
       OTHERS     = 1.
 
-  MOVE randnum TO gv_randnum. "Moving the local var to the global var and printing to the console.
-  "WRITE:/ randnum.
+*  MOVE randnum TO gv_randnum. "Moving the local var to the global var and printing to the console.
+  WRITE: randnum.
+  CLEAR: randnum.
 
 ENDFORM.          " GEN_RND_NUM
 
@@ -240,7 +325,7 @@ ENDFORM.                    "hello_loop
 *&---------------------------------------------------------------------*
 *&      Form  delay_it
 *&---------------------------------------------------------------------*
-*       This program delays num(30) seconds
+*       This program delays num(x) seconds
 *----------------------------------------------------------------------*
 FORM delay_it.
 
@@ -258,7 +343,8 @@ FORM delay_it.
 
   ENDDO.
 
-  WRITE:/ sy-uzeit, time, num.
+  WRITE:/ sy-uzeit, time,
+        / 'Delay in seconds:', num.
 
 ENDFORM.                    "delay_it
 
@@ -294,14 +380,16 @@ ENDFORM.                    "prog_message
 *----------------------------------------------------------------------*
 FORM syid_status.
 
-  WRITE:/10  sy-cprog,
-        /10  sy-datum,
-        /10  sy-dynnr,
-        /10  sy-tleng,
-        /10  sy-stepl,
-        /10  sy-loopc,
-        /10  sy-fdpos,
-        /10  sy-dbsys.
+  WRITE:/10  'Calling Program: ',sy-cprog,
+        /10  'Current Date of Application Server: ',sy-datum,
+        /10  'Current Screen Number: ',sy-dynnr,
+        /10  'Row Length of Internal Table: ',sy-tleng,
+        /10  'Index of Current Step Loop Line: ',sy-stepl,
+        /10  'Visible Lines of a Step Loop: ',sy-loopc,
+        /10  'Found Location in Byte or Character String: ',sy-fdpos,
+        /10  'Central Database System: ',sy-dbsys.
+
+
 
 ENDFORM.                    "syid_status
 
@@ -408,7 +496,10 @@ FORM calculator.
       lv_result = pa_int1 * pa_int2.
     WHEN '/'.
       lv_result = pa_int1 / pa_int2.
+    WHEN '^'.
+      lv_result = SQRT( pa_int1 ).
   ENDCASE.
+
 
   WRITE: 'Result:', lv_result.
 
@@ -459,8 +550,8 @@ ENDFORM.                    "split_word
 *&---------------------------------------------------------------------*
 *&      Form text_num_count
 *&---------------------------------------------------------------------*
-*       Printing a string as many times as it has been initialized by
-*       a number
+*&       Printing a string as many times as it has been initialized by
+*&       a number
 *----------------------------------------------------------------------*
 FORM text_num_count.
 
@@ -478,3 +569,260 @@ FORM text_num_count.
 
 
 ENDFORM.                    "text_num_count
+
+*&---------------------------------------------------------------------*
+*&      Form  ageCalculation
+*&---------------------------------------------------------------------*
+*&       Calculating days, weeks, months, & years based on date range.
+*&       Takes in two agruments, returns four.
+*&---------------------------------------------------------------------*
+FORM agecalculation.
+
+  DATA: completedays   TYPE i,
+        completeweeks  TYPE i,
+        completemonths TYPE i,
+        completeyears  TYPE i.
+
+  CALL FUNCTION 'HR_99S_INTERVAL_BETWEEN_DATES'
+    EXPORTING
+      begda    = p_dat1
+      endda    = p_dat2
+    IMPORTING
+      days     = completedays
+      c_weeks  = completeweeks
+      c_months = completemonths
+      c_years  = completeyears.
+
+  WRITE:/  'Start Date:',p_dat1,
+        /  'End Date:',p_dat2.
+        SKIP 1.
+  WRITE:/  completedays,'days old.',
+        /  completeweeks,'weeks old.',
+        /  completemonths,'months old.',
+        /  completeyears,'years old.'.
+        SKIP 1.
+  WRITE:/  'Current Time:',sy-uzeit,
+        /  'Todays Date:',sy-datum.
+
+
+ENDFORM.                    "ageCalculation
+
+*&---------------------------------------------------------------------*
+*&      Form  calculate_bday
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+FORM calculate_bday.
+
+  TYPES:  BEGIN OF stats_data,
+            pernr  LIKE pa0002-pernr,
+            "gbdat  LIKE pa0002-gbdat,
+            "begda  LIKE pa0002-begda,
+            "endda  LIKE pa0002-endda,
+          END OF stats_data.
+
+  DATA: i_it_bday  TYPE STANDARD TABLE OF stats_data.
+  DATA: i_wa_bday  TYPE stats_data.
+
+  TYPES:  BEGIN OF stats_output,
+            pernr  LIKE pa0002-pernr,
+            gbdat  LIKE pa0002-gbdat,
+          END OF stats_output.
+
+  DATA: it_bday_final  TYPE STANDARD TABLE OF stats_output.
+  DATA: wa_bday_final  TYPE stats_output.
+
+  DATA: completeyears  TYPE i.
+
+  SELECT DISTINCT pernr
+    "UP TO 1000 ROWS
+    INTO CORRESPONDING FIELDS OF TABLE i_it_bday
+    FROM pa0002
+    WHERE pernr IN spernr
+    AND begda <= sy-datum
+    AND endda >= sy-datum.
+
+  "SORT i_it_bday BY pernr.
+
+  LOOP AT i_it_bday INTO i_wa_bday.
+
+    CALL FUNCTION 'HR_99S_INTERVAL_BETWEEN_DATES'
+      EXPORTING
+        begda   = p_dat3
+        endda   = p_dat4
+      IMPORTING
+        c_years = completeyears.
+
+    APPEND wa_bday_final TO it_bday_final.
+
+  ENDLOOP.
+
+  LOOP AT it_bday_final INTO wa_bday_final.
+    WRITE:/ wa_bday_final-pernr,
+            completeyears,
+            wa_bday_final-gbdat.
+  ENDLOOP.
+
+ENDFORM.                    "calculate_bday
+
+*&---------------------------------------------------------------------*
+*&      Form  get_ip_address
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+FORM get_ip_address.
+
+  DATA: term LIKE usr41-terminal.
+
+
+  CALL FUNCTION 'TERMINAL_ID_GET'
+    IMPORTING
+      terminal = term.
+
+  WRITE :/ term.
+
+
+  DATA: client     TYPE REF TO if_http_client,
+        ip_address TYPE string.
+
+****Create the Call
+
+  CALL METHOD cl_http_client=>create_by_url
+    EXPORTING
+      url    = 'http://www.google.com'
+      ssl_id = ' '
+    IMPORTING
+      client = client
+    EXCEPTIONS
+      OTHERS = 1.
+
+****Make the call
+
+  client->send( ).
+
+****Receive the Response Object
+
+  CALL METHOD client->receive
+    EXCEPTIONS
+      http_communication_failure = 1
+      http_invalid_state         = 2
+      http_processing_failed     = 3
+      OTHERS                     = 4.
+
+  ip_address = client->response->get_header_field( name = '~remote_addr' ).
+
+  WRITE:/ ip_address.
+
+ENDFORM.                    "get_ip_address
+
+*&---------------------------------------------------------------------*
+*&      Form  string_uppercase
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+FORM string_uppercase.
+
+  DATA: lv_upperstring_temp TYPE string,
+        lv_lowerstring_temp TYPE string.
+
+  lv_upperstring_temp = p_strg.
+  lv_lowerstring_temp = p_strg.
+
+  CASE p_strg.
+    WHEN lv_upperstring_temp.
+      "IF lv_upperstring_temp CA sy-abcde.
+      TRANSLATE lv_upperstring_temp TO UPPER CASE.
+      WRITE: / lv_upperstring_temp,' has at least one capital letter'.
+    WHEN lv_lowerstring_temp.
+      "ELSEIF lv_lowerstring_temp CA sy-abcde.
+      TRANSLATE lv_lowerstring_temp TO LOWER CASE.
+      WRITE: / lv_lowerstring_temp,' has at least one small letters'.
+    WHEN OTHERS.
+      WRITE: / 'I dont know this string!'.
+  ENDCASE.
+
+
+ENDFORM.                    "string_uppercase
+*&---------------------------------------------------------------------*
+*&      Form  get_user_input
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+FORM get_user_input.
+
+  DATA: t_fields LIKE sval OCCURS 0 WITH HEADER LINE.
+
+*Prepare parameters for FM
+  t_fields-tabname = 'BKPF'.
+  t_fields-fieldname = 'BUDAT'.
+  APPEND t_fields.
+
+  t_fields-tabname = 'BKPF'.
+  t_fields-fieldname = 'BLART'.
+  APPEND t_fields.
+
+  CALL FUNCTION 'POPUP_GET_VALUES'
+    EXPORTING
+*     NO_VALUE_CHECK        = ' '
+      popup_title           = 'Test Popup'
+*     START_COLUMN          = '5'
+*     START_ROW             = '5'
+*   IMPORTING
+*     RETURNCODE            =
+    TABLES
+      fields                = t_fields
+   EXCEPTIONS
+     error_in_fields       = 1
+     OTHERS                = 2
+            .
+  IF sy-subrc <> 0.
+* Implement suitable error handling here
+  ENDIF.
+
+*Display Report
+  LOOP AT t_fields.
+    WRITE:/ t_fields-value.
+  ENDLOOP.
+
+ENDFORM.                    "get_user_input
+
+FORM calculate_age_by_lightyears.
+
+  DATA: lightspeed     TYPE i VALUE 186000,
+        lightday       TYPE p,
+        completedays   TYPE i,
+        completeweeks  TYPE i,
+        completemonths TYPE i,
+        completeyears  TYPE i.
+
+  lightday = ( 24 * 3600 ) * lightspeed.
+  WRITE: lightday, '= Distance traveled in 1 Light Day.'.
+
+  CALL FUNCTION 'HR_99S_INTERVAL_BETWEEN_DATES'
+    EXPORTING
+      begda    = p_lad1
+      endda    = p_lad2
+    IMPORTING
+      days     = completedays
+      c_weeks  = completeweeks
+      c_months = completemonths
+      c_years  = completeyears.
+
+  WRITE:/  completedays,'days old.',
+        /  completeweeks,'weeks old.',
+        /  completemonths,'months old.',
+        /  completeyears,'years old.',
+        /  'Time:',sy-uzeit,
+        /  'Date:',sy-datum.
+
+ENDFORM.
+
+FORM unicode_check.
+
+  IF cl_abap_char_utilities=>charsize = 1.
+    WRITE: 'This system is non-Unicode'(000).
+  ELSE.
+    WRITE: 'This system is Unicode'(001).
+  ENDIF.
+
+ENDFORM.
